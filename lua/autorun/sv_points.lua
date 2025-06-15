@@ -6,6 +6,8 @@ local PlayerPoints = PlayerPoints or {}
 
 util.AddNetworkString("RequestPoints")
 util.AddNetworkString("PointsResponse")
+util.AddNetworkString("RequestCurrentPoints")
+util.AddNetworkString("SendCurrentPoints")
 
 -- Handle point request from client
 net.Receive("RequestPoints", function(len, ply)
@@ -15,6 +17,15 @@ net.Receive("RequestPoints", function(len, ply)
     local text = "Теперь у вас " .. PlayerPoints[sid] .. " очков"
     net.Start("PointsResponse")
     net.WriteString(text)
+    net.Send(ply)
+end)
+
+-- Provide the player's current points on request
+net.Receive("RequestCurrentPoints", function(_, ply)
+    local sid = ply:SteamID()
+    local points = PlayerPoints[sid] or 0
+    net.Start("SendCurrentPoints")
+    net.WriteInt(points, 32)
     net.Send(ply)
 end)
 

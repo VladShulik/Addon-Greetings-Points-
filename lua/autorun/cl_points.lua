@@ -6,6 +6,17 @@ net.Receive("PointsResponse", function()
     chat.AddText(Color(0, 255, 0), msg)
 end)
 
+local pointsLabel
+
+net.Receive("SendCurrentPoints", function()
+    local points = net.ReadInt(32)
+    if IsValid(pointsLabel) then
+        pointsLabel:SetText("Ваши очки: " .. points)
+    else
+        chat.AddText(Color(0, 255, 0), "Ваши очки: " .. points)
+    end
+end)
+
 local function ShowPointsPopup()
     local frame = vgui.Create("DFrame")
     frame:SetSize(250, 100)
@@ -22,6 +33,24 @@ local function ShowPointsPopup()
         frame:Close()
     end
 end
+
+local function ShowPointsMenu()
+    local frame = vgui.Create("DFrame")
+    frame:SetSize(200, 80)
+    frame:Center()
+    frame:SetTitle("Мои очки")
+    frame:MakePopup()
+
+    pointsLabel = vgui.Create("DLabel", frame)
+    pointsLabel:Dock(FILL)
+    pointsLabel:SetContentAlignment(5)
+    pointsLabel:SetText("Загрузка...")
+
+    net.Start("RequestCurrentPoints")
+    net.SendToServer()
+end
+
+concommand.Add("points_menu", ShowPointsMenu)
 
 -- Show popup when the local player spawns
 hook.Add("InitPostEntity", "Points_ShowPopup", ShowPointsPopup)
