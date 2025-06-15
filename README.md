@@ -17,3 +17,8 @@ Install Lua to run simple checks:
 apt-get update && apt-get install -y lua5.4
 lua -v
 ```
+
+## Usage
+
+Run the console command `points_menu` in Garry's Mod to open a small window
+displaying your current points.
