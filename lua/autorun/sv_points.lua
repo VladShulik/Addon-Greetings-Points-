@@ -26,6 +26,7 @@ util.AddNetworkString("PointsShopPurchaseResult")
 util.AddNetworkString("PointsAdminRequestPlayers")
 util.AddNetworkString("PointsAdminPlayersData")
 util.AddNetworkString("PointsAdminAdjustPoints")
+util.AddNetworkString("PointsAdminMassAction")
 
 local function GetPoints(ply)
     return PlayerPoints[ply:SteamID()] or 0
@@ -182,6 +183,46 @@ net.Receive("PointsAdminAdjustPoints", function(_, ply)
     net.WriteString(target:SteamID())
     net.WriteInt(newValue, 32)
     net.Send(ply)
+end)
+
+
+net.Receive("PointsAdminMassAction", function(_, ply)
+    if not IsPlayerAdmin(ply) then
+        SendPointsMessage(ply, "Недостаточно прав")
+        return
+    end
+
+    local action = net.ReadString()
+    local amount = math.floor(net.ReadInt(32))
+
+    if action ~= "add_all" and action ~= "reset_all" then
+        SendPointsMessage(ply, "Неизвестное массовое действие")
+        return
+    end
+
+    if action == "add_all" and math.abs(amount) > 100000 then
+        SendPointsMessage(ply, "Слишком большое значение")
+        return
+    end
+
+    for _, target in ipairs(player.GetAll()) do
+        local oldValue = GetPoints(target)
+        if action == "reset_all" then
+            SetPoints(target, 0)
+            SendPointsMessage(target, "Администратор сбросил ваши очки")
+        else
+            SetPoints(target, oldValue + amount)
+            SendPointsMessage(target, "Администратор изменил ваши очки на " .. amount)
+        end
+
+        SendCurrentPoints(target)
+    end
+
+    if action == "reset_all" then
+        SendPointsMessage(ply, "Очки всех игроков сброшены")
+    else
+        SendPointsMessage(ply, "Очки всех игроков изменены на " .. amount)
+    end
 end)
 
 hook.Add("PlayerSay", "PointsChatCommand", function(ply, text)
