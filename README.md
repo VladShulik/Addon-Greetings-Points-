@@ -1,24 +1,22 @@
-# Addon-Greetings-Points
-
-This repository provides a minimal example addon that greets users and tracks
-their points. It can serve as a starting template for similar projects.
-
-## License
-
-This project is released under the [MIT License](LICENSE).
-=======
 # Addon Greetings Points
 
-This Garry's Mod addon adds a simple point system.
+Garry's Mod addon with a points system, weapon shop and admin panel.
 
-## Development
-Install Lua to run simple checks:
+## Features
+- Earn points with popup button (`+10`) and track balance.
+- Open personal points window: `points_menu`.
+- Buy Half-Life 2/Garry's Mod default weapons in shop: `points_shop`.
+- Admin points control panel: `points_admin` (admins only).
+- Chat shortcuts:
+  - `!points` — show your balance.
+  - `!shop` — open weapon shop.
+  - `!adminpoints` — open admin panel.
+
+## Development check
 ```bash
-apt-get update && apt-get install -y lua5.4
-lua -v
+luac -p lua/autorun/sv_points.lua
+luac -p lua/autorun/cl_points.lua
 ```
 
-## Usage
-
-Run the console command `points_menu` in Garry's Mod to open a small window
-displaying your current points.
+## License
+MIT, see [LICENSE](LICENSE).
